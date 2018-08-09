@@ -1,32 +1,36 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-function withOnBlur() {
+function withOnBlur({ ifClick = true, ifKeyUp = true } = {}) {
   return function (WrappedComponent) {
+    if (!(ifClick || ifKeyUp)) return WrappedComponent;
+
     class WithOnBlur extends React.PureComponent {
-      blurCallback = () => {};
+      blurCallback = undefined;
+      
+      componentWillUnmount() {
+        this.unsetBlurListener();
+      }
 
       setBlurListener = callback => {
-        console.log('setBlurListener');
         this.blurCallback = callback;
-        document.addEventListener('click', this.onClick);
-        document.addEventListener('keyup', this.onKeyUp);
+        if (!callback) return false;
+        if (ifClick) document.addEventListener('click', this.onDocumentClick);
+        if (ifKeyUp) document.addEventListener('keyup', this.onDocumentKeyUp);
+        return true;
       };
 
       unsetBlurListener = () => {
-        console.log('xxxxx', 'unsetBlurListener');
-        document.removeEventListener('click', this.onClick);
-        document.removeEventListener('keyup', this.onKeyUp);
+        if (ifClick) document.removeEventListener('click', this.onDocumentClick);
+        if (ifKeyUp) document.removeEventListener('keyup', this.onDocumentKeyUp);
       };
 
-      onClick = e => {
-        console.log(10000000000, e.type);
+      onDocumentClick = e => {
         this.checkAndBlur(e.target, e);
       };
 
-      onKeyUp = e => {
+      onDocumentKeyUp = e => {
         if (e.keyCode === 9) {
-          console.log('-------------', e.type);
           this.checkAndBlur(e.target, e);
         }
       };
