@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-function withOnBlur({ ifClick = true, ifKeyUp = true } = {}) {
+function withOnBlur({ ifClick = true, ifKeyUpDown = true } = {}) {
   return function (WrappedComponent) {
-    if (!(ifClick || ifKeyUp)) return WrappedComponent;
+    if (!(ifClick || ifKeyUpDown)) return WrappedComponent;
 
     class WithOnBlur extends React.PureComponent {
       blurCallback = undefined;
@@ -16,13 +16,13 @@ function withOnBlur({ ifClick = true, ifKeyUp = true } = {}) {
         this.blurCallback = callback;
         if (!callback) return false;
         if (ifClick) document.addEventListener('click', this.onDocumentClick);
-        if (ifKeyUp) document.addEventListener('keyup', this.onDocumentKeyUp);
+        if (ifKeyUpDown) document.addEventListener('keyup', this.onDocumentKeyUp);
         return true;
       };
 
       unsetBlurListener = () => {
         if (ifClick) document.removeEventListener('click', this.onDocumentClick);
-        if (ifKeyUp) document.removeEventListener('keyup', this.onDocumentKeyUp);
+        if (ifKeyUpDown) document.removeEventListener('keyup', this.onDocumentKeyUp);
       };
 
       onDocumentClick = e => {
