@@ -29,7 +29,11 @@ function withOnBlur() {
       _ref$ifClick = _ref.ifClick,
       ifClick = _ref$ifClick === undefined ? true : _ref$ifClick,
       _ref$ifKeyUpDown = _ref.ifKeyUpDown,
-      ifKeyUpDown = _ref$ifKeyUpDown === undefined ? true : _ref$ifKeyUpDown;
+      ifKeyUpDown = _ref$ifKeyUpDown === undefined ? true : _ref$ifKeyUpDown,
+      _ref$debug = _ref.debug,
+      debug = _ref$debug === undefined ? false : _ref$debug;
+
+  var debugLog = debug ? console.debug : function () {};
 
   return function (WrappedComponent) {
     if (!(ifClick || ifKeyUpDown)) return WrappedComponent;
@@ -49,6 +53,7 @@ function withOnBlur() {
         }
 
         return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = WithOnBlur.__proto__ || Object.getPrototypeOf(WithOnBlur)).call.apply(_ref2, [this].concat(args))), _this), _this.blurCallback = undefined, _this.setBlurListener = function (callback) {
+          debugLog('react-onblur::setBlurListener');
           _this.blurCallback = callback;
           if (!callback) return false;
           if (ifClick) document.addEventListener('click', _this.onDocumentClick);
@@ -58,20 +63,25 @@ function withOnBlur() {
           }
           return true;
         }, _this.unsetBlurListener = function () {
+          debugLog('react-onblur::unsetBlurListener');
           if (ifClick) document.removeEventListener('click', _this.onDocumentClick);
           if (ifKeyUpDown) {
             document.removeEventListener('keyup', _this.onDocumentKey);
             document.removeEventListener('keydown', _this.onDocumentKey);
           }
         }, _this.onDocumentClick = function (e) {
+          debugLog('react-onblur::document click', e);
           _this.checkAndBlur(e.target, e);
         }, _this.onDocumentKey = function (e) {
+          debugLog('react-onblur::document key event', e);
           if (e.keyCode === 9) {
             _this.checkAndBlur(e.target, e);
           }
         }, _this.checkAndBlur = function (element, e) {
+          debugLog('react-onblur::check and blur');
           if (!_this.blurCallback) return false;
           if (!_this.inArea(element)) {
+            debugLog('react-onblur::blur callback');
             _this.blurCallback(e);
           }
         }, _this.inArea = function (domNode) {

@@ -1,7 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-function withOnBlur({ ifClick = true, ifKeyUpDown = true } = {}) {
+function withOnBlur({ ifClick = true, ifKeyUpDown = true, debug = false } = {}) {
+  const debugLog = debug 
+    ? console.debug
+    : () => {};
+
   return function (WrappedComponent) {
     if (!(ifClick || ifKeyUpDown)) return WrappedComponent;
 
@@ -13,6 +17,7 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true } = {}) {
       }
 
       setBlurListener = callback => {
+        debugLog('react-onblur::setBlurListener');
         this.blurCallback = callback;
         if (!callback) return false;
         if (ifClick) document.addEventListener('click', this.onDocumentClick);
@@ -24,6 +29,7 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true } = {}) {
       };
 
       unsetBlurListener = () => {
+        debugLog('react-onblur::unsetBlurListener');
         if (ifClick) document.removeEventListener('click', this.onDocumentClick);
         if (ifKeyUpDown) {
           document.removeEventListener('keyup', this.onDocumentKey);
@@ -32,18 +38,22 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true } = {}) {
       };
 
       onDocumentClick = e => {
+        debugLog('react-onblur::document click', e);
         this.checkAndBlur(e.target, e);
       };
 
       onDocumentKey = e => {
+        debugLog('react-onblur::document key event', e);
         if (e.keyCode === 9) {
           this.checkAndBlur(e.target, e);
         }
       };
 
       checkAndBlur = (element, e) => {
+        debugLog('react-onblur::check and blur');
         if (!this.blurCallback) return false;
         if (!this.inArea(element)) {
+          debugLog('react-onblur::blur callback');
           this.blurCallback(e);
         }
       };
