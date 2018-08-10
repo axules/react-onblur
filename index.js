@@ -16,20 +16,26 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true } = {}) {
         this.blurCallback = callback;
         if (!callback) return false;
         if (ifClick) document.addEventListener('click', this.onDocumentClick);
-        if (ifKeyUpDown) document.addEventListener('keyup', this.onDocumentKeyUp);
+        if (ifKeyUpDown) {
+          document.addEventListener('keyup', this.onDocumentKey);
+          document.addEventListener('keydown', this.onDocumentKey);
+        }
         return true;
       };
 
       unsetBlurListener = () => {
         if (ifClick) document.removeEventListener('click', this.onDocumentClick);
-        if (ifKeyUpDown) document.removeEventListener('keyup', this.onDocumentKeyUp);
+        if (ifKeyUpDown) {
+          document.removeEventListener('keyup', this.onDocumentKey);
+          document.removeEventListener('keydown', this.onDocumentKey);
+        }
       };
 
       onDocumentClick = e => {
         this.checkAndBlur(e.target, e);
       };
 
-      onDocumentKeyUp = e => {
+      onDocumentKey = e => {
         if (e.keyCode === 9) {
           this.checkAndBlur(e.target, e);
         }

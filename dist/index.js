@@ -52,14 +52,20 @@ function withOnBlur() {
           _this.blurCallback = callback;
           if (!callback) return false;
           if (ifClick) document.addEventListener('click', _this.onDocumentClick);
-          if (ifKeyUpDown) document.addEventListener('keyup', _this.onDocumentKeyUp);
+          if (ifKeyUpDown) {
+            document.addEventListener('keyup', _this.onDocumentKey);
+            document.addEventListener('keydown', _this.onDocumentKey);
+          }
           return true;
         }, _this.unsetBlurListener = function () {
           if (ifClick) document.removeEventListener('click', _this.onDocumentClick);
-          if (ifKeyUpDown) document.removeEventListener('keyup', _this.onDocumentKeyUp);
+          if (ifKeyUpDown) {
+            document.removeEventListener('keyup', _this.onDocumentKey);
+            document.removeEventListener('keydown', _this.onDocumentKey);
+          }
         }, _this.onDocumentClick = function (e) {
           _this.checkAndBlur(e.target, e);
-        }, _this.onDocumentKeyUp = function (e) {
+        }, _this.onDocumentKey = function (e) {
           if (e.keyCode === 9) {
             _this.checkAndBlur(e.target, e);
           }

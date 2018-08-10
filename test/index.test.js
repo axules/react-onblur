@@ -59,9 +59,9 @@ describe('withOnBlur', () => {
   
       document.addEventListener.mockClear();
       wrappedComponent.find('#button_open').simulate('click');
-      expect(document.addEventListener).toHaveBeenCalledTimes(2);
+      expect(document.addEventListener).toHaveBeenCalledTimes(3);
       expect(document.addEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick]);
-      expect(document.addEventListener.mock.calls[1]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp]);
+      expect(document.addEventListener.mock.calls[1]).toEqual(['keyup', wrapper.instance().onDocumentKey]);
     });
   
     test('should remove events', () => {
@@ -71,9 +71,10 @@ describe('withOnBlur', () => {
       wrappedComponent.find('#button_open').simulate('click');
       document.removeEventListener.mockClear();
       wrappedComponent.instance().props.unsetBlurListener();
-      expect(document.removeEventListener).toHaveBeenCalledTimes(2);
+      expect(document.removeEventListener).toHaveBeenCalledTimes(3);
       expect(document.removeEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick]);
-      expect(document.removeEventListener.mock.calls[1]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp]);
+      expect(document.removeEventListener.mock.calls[1]).toEqual(['keyup', wrapper.instance().onDocumentKey]);
+      expect(document.removeEventListener.mock.calls[2]).toEqual(['keydown', wrapper.instance().onDocumentKey]);
     });
   
     test('should remove events when unmount', () => {
@@ -84,9 +85,10 @@ describe('withOnBlur', () => {
       wrappedComponent.find('#button_open').simulate('click');
       document.removeEventListener.mockClear();
       mountedComponent.unmount();
-      expect(document.removeEventListener).toHaveBeenCalledTimes(2);
+      expect(document.removeEventListener).toHaveBeenCalledTimes(3);
       expect(document.removeEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick]);
-      expect(document.removeEventListener.mock.calls[1]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp]);
+      expect(document.removeEventListener.mock.calls[1]).toEqual(['keyup', wrapper.instance().onDocumentKey]);
+      expect(document.removeEventListener.mock.calls[2]).toEqual(['keydown', wrapper.instance().onDocumentKey]);
     });
   
     test('should open component', () => {
@@ -122,7 +124,7 @@ describe('withOnBlur', () => {
       const wrappedComponent = wrapper.childAt(0);
   
       wrappedComponent.find('#button_open').simulate('click');
-      wrapper.instance().onDocumentKeyUp({ target: mountedComponent.find('#button_out').instance(), keyCode: 9 });
+      wrapper.instance().onDocumentKey({ target: mountedComponent.find('#button_out').instance(), keyCode: 9 });
   
       expect(wrappedComponent.instance().state.isOpened).toBe(false);
     });
@@ -132,7 +134,7 @@ describe('withOnBlur', () => {
       const wrappedComponent = wrapper.childAt(0);
   
       wrappedComponent.find('#button_open').simulate('click');
-      wrapper.instance().onDocumentKeyUp({ target: mountedComponent.find('#button_in').instance(), keyCode: 9 });
+      wrapper.instance().onDocumentKey({ target: mountedComponent.find('#button_in').instance(), keyCode: 9 });
   
       expect(wrappedComponent.instance().state.isOpened).toBe(true);
     });
@@ -142,7 +144,7 @@ describe('withOnBlur', () => {
       const wrappedComponent = wrapper.childAt(0);
   
       wrappedComponent.find('#button_open').simulate('click');
-      wrapper.instance().onDocumentKeyUp({ target: mountedComponent.find('#button_out').instance(), keyCode: 13 });
+      wrapper.instance().onDocumentKey({ target: mountedComponent.find('#button_out').instance(), keyCode: 13 });
   
       expect(wrappedComponent.instance().state.isOpened).toBe(true);
     });
