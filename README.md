@@ -1,6 +1,12 @@
 # react-onblur
 HOC for Blur (Unfocus) event handling of React component
 
+## Installation
+
+```
+npm i --save react-onblur
+```
+
 ## What is it?
 
 It is just HOC function
