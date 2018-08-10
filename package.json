@@ -1,6 +1,6 @@
 {
   "name": "react-onblur",
-  "version": "1.0.0b",
+  "version": "1.0.0-b.02",
   "author": {
     "name": "Shelest Denis",
     "email": "axules@gmail.com"
@@ -14,7 +14,7 @@
       "email": "axules@gmail.com"
     }
   ],
-  "main": "src/index.js",
+  "main": "build/index.js",
   "deprecated": false,
   "description": "HOC for handling of component blur event",
   "keywords": [
@@ -33,6 +33,7 @@
     "url": "https://github.com/axules/react-onblur.git"
   },
   "scripts": {
+    "build": "npm test && babel -d build index.js",
     "test": "jest",
     "test:watch": "jest --watchAll"
   },
@@ -40,14 +41,13 @@
     "runner": "jest-runner-eslint",
     "displayName": "lint",
     "testMatch": [
-      "<rootDir>/src/**/*.test.js"
+      "<rootDir>/test/**/*.test.js"
     ]
   },
-  "dependencies": {
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.6",
     "babel-jest": "^23.4.2",
