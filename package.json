@@ -1,6 +1,6 @@
 {
   "name": "react-onblur",
-  "version": "1.0.0-b03",
+  "version": "1.0.1",
   "author": {
     "name": "Shelest Denis",
     "email": "axules@gmail.com"
@@ -16,7 +16,7 @@
   ],
   "main": "dist/index.js",
   "deprecated": false,
-  "description": "HOC for handling of component blur event",
+  "description": "HOC for Blur (Unfocus) event handling of React component",
   "keywords": [
     "react",
     "hoc",
@@ -25,7 +25,8 @@
     "blur",
     "clickoutside",
     "outside",
-    "close"
+    "close",
+    "unfocus"
   ],
   "license": "MIT",
   "repository": {
