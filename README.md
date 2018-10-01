@@ -19,7 +19,7 @@ export default withOnBlur(/* args */)(YourReactCompoenent);
 
 which put in your component two extra props
 ```
-setBlurListener: function (callback: function(event))
+setBlurListener: function (callback: function(event), once: bool)
 ```
 
 ```
@@ -28,11 +28,12 @@ unsetBlurListener: function ()
 
 `setBlurListener` should be called when you want add events to document.
 
-`callback` function will be called (with event arg) once your component is unfocused or user clicked outside your component.
+* `callback` - function will be called (with event arg) once your component is unfocused or user will click outside of your component.
+* `once` - bool, if true then `unsetBlurListener` will be called after `callback` once your component is unfocused or user will click outside of your component.
 
 `unsetBlurListener` should be called when your want to remove events from document.
 
-`unsetBlurListener` will be called always in `componentWillUnmount`.
+`unsetBlurListener` will be called in `componentWillUnmount` always.
 
 ## How can you use it?
 
@@ -52,15 +53,18 @@ class DemoComponent extends PureComponent {
     const { setBlurListener, unsetBlurListener } = this.props;
         
     if (isOpened !== prevState.isOpened) {
+
       // if our list was opened, then we will add listeners,
       if (isOpened) setBlurListener(this.onBlur);
       // else we will remove listeners
       else unsetBlurListener();
+
+      //or just 
+      // if (isOpened) setBlurListener(this.onBlur, true);
     }
   }
 
   onClickOpen = () => this.setState({ isOpened: true });
-  // if component was unfocused then we will close list
   onBlur = () => this.setState({ isOpened: false });
 
   render() {
@@ -105,6 +109,7 @@ Next, you can use this component in your App:
 | `ifClick` | bool | true | when `true` will add `click` event for document
 | `ifKeyUpDown` | bool | true | when `true` will add `keyup` and `keydown` events for document
 | `debug` | bool | false | when `true` will write debug messages to console
+| `autoUnset` | bool | false | if `true` then `unsetBlurListener` will be called after callback action call once your component is unfocused or user will click outside of your component 
 
 ### Example
 ```javascript
@@ -113,7 +118,8 @@ import withOnBlur from "react-onblur";
 export default withOnBlur({
   ifClick: true,
   ifKeyUpDown: false,
-  debug: true
+  debug: true,
+  autoUnset: true
 })(YourReactCompoenent);
 ```
 
