@@ -9,10 +9,10 @@ class WithOnBlurComponent extends PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     const { isOpened } = this.state;
-    const { setBlurListener, unsetBlurListener } = this.props;
+    const { setBlurListener, unsetBlurListener, isOnce } = this.props;
 
     if (isOpened !== prevState.isOpened) {
-      if (isOpened) setBlurListener(this.onBlurHandler);
+      if (isOpened) setBlurListener(this.onBlurHandler, isOnce);
       else unsetBlurListener();
     }
   }
@@ -45,10 +45,18 @@ class WithOnBlurComponent extends PureComponent {
 
 WithOnBlurComponent.propTypes = {
   setBlurListener: PropTypes.func.isRequired,
-  unsetBlurListener: PropTypes.func.isRequired
+  unsetBlurListener: PropTypes.func.isRequired,
+  isOnce: PropTypes.bool
 };
 
 WithOnBlurComponent.defaultProps = {
+  isOnce: false
 };
 
+const WithAutoOnBlurComponent = withOnBlur({ autoUnset: true })(WithOnBlurComponent);
+
 export default withOnBlur()(WithOnBlurComponent);
+
+export {
+  WithAutoOnBlurComponent
+};

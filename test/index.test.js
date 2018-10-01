@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import TestComponent from './TestComponent';
-import WithOnBlurComponent from './WithOnBlurComponent';
+import WithOnBlurComponent, { WithAutoOnBlurComponent } from './WithOnBlurComponent';
 import './setupTests';
 
 describe('withOnBlur', () => {
@@ -29,6 +29,7 @@ describe('withOnBlur', () => {
     comp.unmount();
   });
 
+  
   describe('mount TestComponent', () => {
     let mountedComponent = null;
 
@@ -60,8 +61,10 @@ describe('withOnBlur', () => {
       document.addEventListener.mockClear();
       wrappedComponent.find('#button_open').simulate('click');
       expect(document.addEventListener).toHaveBeenCalledTimes(3);
+      expect(document.removeEventListener).toHaveBeenCalledTimes(0);
       expect(document.addEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick]);
       expect(document.addEventListener.mock.calls[1]).toEqual(['keyup', wrapper.instance().onDocumentKey]);
+      expect(document.addEventListener.mock.calls[2]).toEqual(['keydown', wrapper.instance().onDocumentKey]);
     });
   
     test('should remove events', () => {
@@ -75,6 +78,36 @@ describe('withOnBlur', () => {
       expect(document.removeEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick]);
       expect(document.removeEventListener.mock.calls[1]).toEqual(['keyup', wrapper.instance().onDocumentKey]);
       expect(document.removeEventListener.mock.calls[2]).toEqual(['keydown', wrapper.instance().onDocumentKey]);
+    });
+
+    test('should auto remove after click outside once', () => {
+      const mountedComponent = mount(<TestComponent isOnce />);
+      const wrapper = mountedComponent.find(WithOnBlurComponent).first();
+      const wrappedComponent = wrapper.childAt(0);
+  
+      wrappedComponent.find('#button_open').simulate('click');
+      document.removeEventListener.mockClear();
+      wrapper.instance().onDocumentClick({ target: mountedComponent.find('#button_out').instance() });
+      
+      expect(document.removeEventListener).toHaveBeenCalledTimes(6);
+      expect(document.removeEventListener.mock.calls[3]).toEqual(['click', wrapper.instance().onDocumentClick]);
+      expect(document.removeEventListener.mock.calls[4]).toEqual(['keyup', wrapper.instance().onDocumentKey]);
+      expect(document.removeEventListener.mock.calls[5]).toEqual(['keydown', wrapper.instance().onDocumentKey]);
+    });
+
+    test('should auto remove after click outside always', () => {
+      const mountedComponent = mount(<TestComponent isAuto />);
+      const wrapper = mountedComponent.find(WithAutoOnBlurComponent).first();
+      const wrappedComponent = wrapper.childAt(0);
+  
+      wrappedComponent.find('#button_open').simulate('click');
+      document.removeEventListener.mockClear();
+      wrapper.instance().onDocumentClick({ target: mountedComponent.find('#button_out').instance() });
+      
+      expect(document.removeEventListener).toHaveBeenCalledTimes(6);
+      expect(document.removeEventListener.mock.calls[3]).toEqual(['click', wrapper.instance().onDocumentClick]);
+      expect(document.removeEventListener.mock.calls[4]).toEqual(['keyup', wrapper.instance().onDocumentKey]);
+      expect(document.removeEventListener.mock.calls[5]).toEqual(['keydown', wrapper.instance().onDocumentKey]);
     });
   
     test('should remove events when unmount', () => {
@@ -119,7 +152,7 @@ describe('withOnBlur', () => {
       expect(wrappedComponent.instance().state.isOpened).toBe(true);
     });
   
-    test('should close component when press Tab key', () => {
+    test('should close component when press Tab key outside', () => {
       const wrapper = mountedComponent.find(WithOnBlurComponent).first();
       const wrappedComponent = wrapper.childAt(0);
   
@@ -128,8 +161,18 @@ describe('withOnBlur', () => {
   
       expect(wrappedComponent.instance().state.isOpened).toBe(false);
     });
+
+    test('should close component when press not Tab key outside', () => {
+      const wrapper = mountedComponent.find(WithOnBlurComponent).first();
+      const wrappedComponent = wrapper.childAt(0);
   
-    test('should not close component when press Tab key to inside', () => {
+      wrappedComponent.find('#button_open').simulate('click');
+      wrapper.instance().onDocumentKey({ target: mountedComponent.find('#button_out').instance(), keyCode: 32 });
+  
+      expect(wrappedComponent.instance().state.isOpened).toBe(false);
+    });
+  
+    test('should not close component when press Tab key on inside element', () => {
       const wrapper = mountedComponent.find(WithOnBlurComponent).first();
       const wrappedComponent = wrapper.childAt(0);
   
@@ -139,12 +182,12 @@ describe('withOnBlur', () => {
       expect(wrappedComponent.instance().state.isOpened).toBe(true);
     });
   
-    test('should not close component when press not Tab key to inside', () => {
+    test('should not close component when press not Tab key on inside element', () => {
       const wrapper = mountedComponent.find(WithOnBlurComponent).first();
       const wrappedComponent = wrapper.childAt(0);
   
       wrappedComponent.find('#button_open').simulate('click');
-      wrapper.instance().onDocumentKey({ target: mountedComponent.find('#button_out').instance(), keyCode: 13 });
+      wrapper.instance().onDocumentKey({ target: mountedComponent.find('#button_in').instance(), keyCode: 13 });
   
       expect(wrappedComponent.instance().state.isOpened).toBe(true);
     });
