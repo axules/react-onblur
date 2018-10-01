@@ -1,7 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-function withOnBlur({ ifClick = true, ifKeyUpDown = true, debug = false } = {}) {
+/*
+  ifClick - if true, then click event for document will be added
+  ifKeyDown - if true, then keydow and keyup events for document will be added
+  autoUnset - if true, then unsetBlurListener function will be called after callback
+  debug - if true, all debug messages will be printed in console
+*/
+function withOnBlur({ ifClick = true, ifKeyUpDown = true, autoUnset = false, debug = false } = {}) {
   const debugLog = debug 
     ? console.debug
     : () => {};
@@ -11,15 +16,18 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true, debug = false } = {}) 
 
     class WithOnBlur extends React.PureComponent {
       blurCallback = undefined;
-      
+      testedElement = null;
+
       componentWillUnmount() {
         this.unsetBlurListener();
       }
 
       setBlurListener = callback => {
         debugLog('react-onblur::setBlurListener');
+        this.testedElement = null;
         this.blurCallback = callback;
         if (!callback) return false;
+
         if (ifClick) document.addEventListener('click', this.onDocumentClick);
         if (ifKeyUpDown) {
           document.addEventListener('keyup', this.onDocumentKey);
@@ -39,13 +47,17 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true, debug = false } = {}) 
 
       onDocumentClick = e => {
         debugLog('react-onblur::document click', e);
-        this.checkAndBlur(e.target, e);
+        if (e.target !== this.testedElement) {
+          this.checkAndBlur(e.target, e);
+          this.testedElement = e.target;
+        }
       };
 
       onDocumentKey = e => {
         debugLog('react-onblur::document key event', e);
-        if (e.keyCode === 9) {
+        if (e.target !== this.testedElement) {
           this.checkAndBlur(e.target, e);
+          this.testedElement = e.target;
         }
       };
 
@@ -55,6 +67,7 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true, debug = false } = {}) 
         if (!this.inArea(element)) {
           debugLog('react-onblur::blur callback');
           this.blurCallback(e);
+          if (autoUnset) this.unsetBlurListener();
         }
       };
 
