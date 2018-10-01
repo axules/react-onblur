@@ -16,16 +16,18 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true, autoUnset = false, deb
 
     class WithOnBlur extends React.PureComponent {
       blurCallback = undefined;
+      isOnce = false;
       testedElement = null;
 
       componentWillUnmount() {
         this.unsetBlurListener();
       }
 
-      setBlurListener = callback => {
+      setBlurListener = (callback, once = false) => {
         debugLog('react-onblur::setBlurListener');
         this.testedElement = null;
         this.blurCallback = callback;
+        this.isOnce = !!once;
         if (!callback) return false;
 
         if (ifClick) document.addEventListener('click', this.onDocumentClick);
@@ -62,12 +64,20 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true, autoUnset = false, deb
       };
 
       checkAndBlur = (element, e) => {
+        const shouldUnset = autoUnset || this.isOnce;
+
         debugLog('react-onblur::check and blur');
-        if (!this.blurCallback) return false;
+        if (!this.blurCallback && !shouldUnset) return false;
         if (!this.inArea(element)) {
-          debugLog('react-onblur::blur callback');
-          this.blurCallback(e);
-          if (autoUnset) this.unsetBlurListener();
+          
+          if (this.blurCallback) {
+            debugLog('react-onblur::blur callback');
+            this.blurCallback(e);
+          }
+          if (shouldUnset) {
+            debugLog('react-onblur::blur auto unset');
+            this.unsetBlurListener();
+          }
         }
       };
 
