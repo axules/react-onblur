@@ -62,6 +62,7 @@ describe('withOnBlur', () => {
       expect(document.addEventListener).toHaveBeenCalledTimes(3);
       expect(document.addEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick]);
       expect(document.addEventListener.mock.calls[1]).toEqual(['keyup', wrapper.instance().onDocumentKey]);
+      expect(document.addEventListener.mock.calls[2]).toEqual(['keydown', wrapper.instance().onDocumentKey]);
     });
   
     test('should remove events', () => {
@@ -119,7 +120,7 @@ describe('withOnBlur', () => {
       expect(wrappedComponent.instance().state.isOpened).toBe(true);
     });
   
-    test('should close component when press Tab key', () => {
+    test('should close component when press Tab key outside', () => {
       const wrapper = mountedComponent.find(WithOnBlurComponent).first();
       const wrappedComponent = wrapper.childAt(0);
   
@@ -128,8 +129,18 @@ describe('withOnBlur', () => {
   
       expect(wrappedComponent.instance().state.isOpened).toBe(false);
     });
+
+    test('should close component when press not Tab key outside', () => {
+      const wrapper = mountedComponent.find(WithOnBlurComponent).first();
+      const wrappedComponent = wrapper.childAt(0);
   
-    test('should not close component when press Tab key to inside', () => {
+      wrappedComponent.find('#button_open').simulate('click');
+      wrapper.instance().onDocumentKey({ target: mountedComponent.find('#button_out').instance(), keyCode: 32 });
+  
+      expect(wrappedComponent.instance().state.isOpened).toBe(false);
+    });
+  
+    test('should not close component when press Tab key on inside element', () => {
       const wrapper = mountedComponent.find(WithOnBlurComponent).first();
       const wrappedComponent = wrapper.childAt(0);
   
@@ -139,12 +150,12 @@ describe('withOnBlur', () => {
       expect(wrappedComponent.instance().state.isOpened).toBe(true);
     });
   
-    test('should not close component when press not Tab key to inside', () => {
+    test('should not close component when press not Tab key on inside element', () => {
       const wrapper = mountedComponent.find(WithOnBlurComponent).first();
       const wrappedComponent = wrapper.childAt(0);
   
       wrappedComponent.find('#button_open').simulate('click');
-      wrapper.instance().onDocumentKey({ target: mountedComponent.find('#button_out').instance(), keyCode: 13 });
+      wrapper.instance().onDocumentKey({ target: mountedComponent.find('#button_in').instance(), keyCode: 13 });
   
       expect(wrappedComponent.instance().state.isOpened).toBe(true);
     });
