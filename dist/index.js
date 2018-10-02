@@ -24,12 +24,20 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/*
+  ifClick - if true, then click event for document will be added
+  ifKeyDown - if true, then keydow and keyup events for document will be added
+  autoUnset - if true, then unsetBlurListener function will be called after callback
+  debug - if true, all debug messages will be printed in console
+*/
 function withOnBlur() {
   var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
       _ref$ifClick = _ref.ifClick,
       ifClick = _ref$ifClick === undefined ? true : _ref$ifClick,
       _ref$ifKeyUpDown = _ref.ifKeyUpDown,
       ifKeyUpDown = _ref$ifKeyUpDown === undefined ? true : _ref$ifKeyUpDown,
+      _ref$autoUnset = _ref.autoUnset,
+      autoUnset = _ref$autoUnset === undefined ? false : _ref$autoUnset,
       _ref$debug = _ref.debug,
       debug = _ref$debug === undefined ? false : _ref$debug;
 
@@ -52,10 +60,15 @@ function withOnBlur() {
           args[_key] = arguments[_key];
         }
 
-        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = WithOnBlur.__proto__ || Object.getPrototypeOf(WithOnBlur)).call.apply(_ref2, [this].concat(args))), _this), _this.blurCallback = undefined, _this.setBlurListener = function (callback) {
+        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = WithOnBlur.__proto__ || Object.getPrototypeOf(WithOnBlur)).call.apply(_ref2, [this].concat(args))), _this), _this.blurCallback = undefined, _this.isOnce = false, _this.testedElement = null, _this.setBlurListener = function (callback) {
+          var once = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
           debugLog('react-onblur::setBlurListener');
+          _this.testedElement = null;
           _this.blurCallback = callback;
+          _this.isOnce = !!once;
           if (!callback) return false;
+
           if (ifClick) document.addEventListener('click', _this.onDocumentClick);
           if (ifKeyUpDown) {
             document.addEventListener('keyup', _this.onDocumentKey);
@@ -71,18 +84,31 @@ function withOnBlur() {
           }
         }, _this.onDocumentClick = function (e) {
           debugLog('react-onblur::document click', e);
-          _this.checkAndBlur(e.target, e);
+          if (e.target !== _this.testedElement) {
+            _this.checkAndBlur(e.target, e);
+            _this.testedElement = e.target;
+          }
         }, _this.onDocumentKey = function (e) {
           debugLog('react-onblur::document key event', e);
-          if (e.keyCode === 9) {
+          if (e.target !== _this.testedElement) {
             _this.checkAndBlur(e.target, e);
+            _this.testedElement = e.target;
           }
         }, _this.checkAndBlur = function (element, e) {
+          var shouldUnset = autoUnset || _this.isOnce;
+
           debugLog('react-onblur::check and blur');
-          if (!_this.blurCallback) return false;
+          if (!_this.blurCallback && !shouldUnset) return false;
           if (!_this.inArea(element)) {
-            debugLog('react-onblur::blur callback');
-            _this.blurCallback(e);
+
+            if (_this.blurCallback) {
+              debugLog('react-onblur::blur callback');
+              _this.blurCallback(e);
+            }
+            if (shouldUnset) {
+              debugLog('react-onblur::blur auto unset');
+              _this.unsetBlurListener();
+            }
           }
         }, _this.inArea = function (domNode) {
           var parentNode = _reactDom2.default.findDOMNode(_this);
