@@ -1,10 +1,18 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import WithOnBlurComponent, { WithAutoOnBlurComponent } from './WithOnBlurComponent';
+import WithOnBlurComponent, { WithAutoOnBlurComponent, WithoutEventsOnBlurComponent } from './WithOnBlurComponent';
 
 class TestComponent extends PureComponent {
+  renderOnBlurComponent() {
+    const { isOnce, isAuto, isEmpty } = this.props;
+
+    if (isAuto) return <WithAutoOnBlurComponent isOnce={isOnce} />;
+    if (isEmpty) return <WithoutEventsOnBlurComponent isOnce={isOnce} />;
+    return <WithOnBlurComponent isOnce={isOnce} />;
+  }
+
   render() {
-    const { isOnce, isAuto } = this.props;
+    
 
     return (
       <div>
@@ -12,10 +20,8 @@ class TestComponent extends PureComponent {
         <div>
           <button id="button_out">Parent button</button>
         </div>
-        {isAuto
-          ? <WithAutoOnBlurComponent isOnce={isOnce} />
-          : <WithOnBlurComponent  isOnce={isOnce} />
-        }
+
+        {this.renderOnBlurComponent()}
       </div>
     );
   }
@@ -23,12 +29,14 @@ class TestComponent extends PureComponent {
 
 TestComponent.propTypes = {
   isOnce: PropTypes.bool,
-  isAuto: PropTypes.bool
+  isAuto: PropTypes.bool,
+  isEmpty: PropTypes.bool
 };
 
 TestComponent.defaultProps = {
   isOnce: false,
-  isAuto: false
+  isAuto: false,
+  isEmpty: false
 };
 
 export default TestComponent;
