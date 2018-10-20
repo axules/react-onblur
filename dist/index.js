@@ -26,7 +26,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /*
   ifClick - if true, then click event for document will be added
-  ifKeyDown - if true, then keydow and keyup events for document will be added
+  ifKeyDown - if true, then keydown and keyup events for document will be added
+  ifEsc - if true, then when user clicks Esc key the event will be called
   autoUnset - if true, then unsetBlurListener function will be called after callback
   debug - if true, all debug messages will be printed in console
 */
@@ -36,6 +37,8 @@ function withOnBlur() {
       ifClick = _ref$ifClick === undefined ? true : _ref$ifClick,
       _ref$ifKeyUpDown = _ref.ifKeyUpDown,
       ifKeyUpDown = _ref$ifKeyUpDown === undefined ? true : _ref$ifKeyUpDown,
+      _ref$ifEsc = _ref.ifEsc,
+      ifEsc = _ref$ifEsc === undefined ? true : _ref$ifEsc,
       _ref$autoUnset = _ref.autoUnset,
       autoUnset = _ref$autoUnset === undefined ? false : _ref$autoUnset,
       _ref$debug = _ref.debug,
@@ -44,7 +47,7 @@ function withOnBlur() {
   var debugLog = debug ? console.debug : function () {};
 
   return function (WrappedComponent) {
-    if (!(ifClick || ifKeyUpDown)) return WrappedComponent;
+    if (!(ifClick || ifKeyUpDown || ifEsc)) return WrappedComponent;
 
     var WithOnBlur = function (_React$PureComponent) {
       _inherits(WithOnBlur, _React$PureComponent);
@@ -60,39 +63,55 @@ function withOnBlur() {
           args[_key] = arguments[_key];
         }
 
-        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = WithOnBlur.__proto__ || Object.getPrototypeOf(WithOnBlur)).call.apply(_ref2, [this].concat(args))), _this), _this.blurCallback = undefined, _this.isOnce = false, _this.testedElement = null, _this.setBlurListener = function (callback) {
+        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = WithOnBlur.__proto__ || Object.getPrototypeOf(WithOnBlur)).call.apply(_ref2, [this].concat(args))), _this), _this.blurCallback = undefined, _this.isOnce = false, _this.checkedElement = null, _this.setBlurListener = function (callback) {
           var once = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
           debugLog('react-onblur::setBlurListener');
-          _this.testedElement = null;
+          _this.checkedElement = null;
           _this.blurCallback = callback;
           _this.isOnce = !!once;
           if (!callback) return false;
 
           if (ifClick) document.addEventListener('click', _this.onDocumentClick);
+          if (ifEsc) document.addEventListener('keydown', _this.onDocumentEsc);
           if (ifKeyUpDown) {
-            document.addEventListener('keyup', _this.onDocumentKey);
-            document.addEventListener('keydown', _this.onDocumentKey);
+            document.addEventListener('keyup', _this.onDocumentKeyUp);
+            document.addEventListener('keydown', _this.onDocumentKeyDown);
           }
           return true;
         }, _this.unsetBlurListener = function () {
           debugLog('react-onblur::unsetBlurListener');
           if (ifClick) document.removeEventListener('click', _this.onDocumentClick);
+          if (ifEsc) document.removeEventListener('keydown', _this.onDocumentEsc);
           if (ifKeyUpDown) {
-            document.removeEventListener('keyup', _this.onDocumentKey);
-            document.removeEventListener('keydown', _this.onDocumentKey);
+            document.removeEventListener('keyup', _this.onDocumentKeyUp);
+            document.removeEventListener('keydown', _this.onDocumentKeyDown);
           }
         }, _this.onDocumentClick = function (e) {
           debugLog('react-onblur::document click', e);
-          if (e.target !== _this.testedElement) {
+          if (e.target !== _this.checkedElement) {
             _this.checkAndBlur(e.target, e);
-            _this.testedElement = e.target;
+            _this.checkedElement = e.target;
           }
-        }, _this.onDocumentKey = function (e) {
-          debugLog('react-onblur::document key event', e);
-          if (e.target !== _this.testedElement) {
+        }, _this.onDocumentKeyDown = function (e) {
+          if (e.target === _this.checkedElement) return e;
+
+          debugLog('react-onblur::document keyDown event', e);
+          _this.checkAndBlur(e.target, e);
+          _this.checkedElement = e.target;
+        }, _this.onDocumentKeyUp = function (e) {
+          if (e.target === _this.checkedElement) return e;
+
+          debugLog('react-onblur::document keyUp event', e);
+          if (String(e.key).toLowerCase() === 'tab' || String(e.code).toLowerCase() === 'tab' || e.keyCode === 9) {
             _this.checkAndBlur(e.target, e);
-            _this.testedElement = e.target;
+            _this.checkedElement = e.target;
+          }
+        }, _this.onDocumentEsc = function (e) {
+          if (String(e.key).toLowerCase() === 'escape' || String(e.code).toLowerCase() === 'escape' || e.keyCode === 27) {
+            debugLog('react-onblur::document ESC event', e);
+            _this.blur(e);
+            _this.checkedElement = e.target;
           }
         }, _this.checkAndBlur = function (element, e) {
           var shouldUnset = autoUnset || _this.isOnce;
@@ -100,15 +119,18 @@ function withOnBlur() {
           debugLog('react-onblur::check and blur');
           if (!_this.blurCallback && !shouldUnset) return false;
           if (!_this.inArea(element)) {
+            _this.blur(e);
+          }
+        }, _this.blur = function (e) {
+          var shouldUnset = autoUnset || _this.isOnce;
 
-            if (_this.blurCallback) {
-              debugLog('react-onblur::blur callback');
-              _this.blurCallback(e);
-            }
-            if (shouldUnset) {
-              debugLog('react-onblur::blur auto unset');
-              _this.unsetBlurListener();
-            }
+          if (_this.blurCallback) {
+            debugLog('react-onblur::blur callback');
+            _this.blurCallback(e);
+          }
+          if (shouldUnset) {
+            debugLog('react-onblur::blur auto unset');
+            _this.unsetBlurListener();
           }
         }, _this.inArea = function (domNode) {
           var parentNode = _reactDom2.default.findDOMNode(_this);
