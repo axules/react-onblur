@@ -108,6 +108,7 @@ Next, you can use this component in your App:
 | - | - | - | - |
 | `ifClick` | bool | true | when `true` will add `click` event for document
 | `ifKeyUpDown` | bool | true | when `true` will add `keyup` and `keydown` events for document
+| `ifEsc` | bool | true | when `true` will add `keydown` event for document to check Esc key pressed
 | `debug` | bool | false | when `true` will write debug messages to console
 | `autoUnset` | bool | false | if `true` then `unsetBlurListener` will be called after callback action call once your component is unfocused or user will click outside of your component 
 
