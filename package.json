@@ -1,6 +1,6 @@
 {
   "name": "react-onblur",
-  "version": "1.2.0",
+  "version": "1.4.0",
   "author": {
     "name": "Shelest Denis",
     "email": "axules@gmail.com"
@@ -34,6 +34,7 @@
     "url": "https://github.com/axules/react-onblur.git"
   },
   "scripts": {
+    "prepack": "npm run build",
     "build": "npm test && babel -d dist index.js",
     "test": "jest",
     "test:watch": "jest --watchAll"

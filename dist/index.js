@@ -25,35 +25,45 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /*
-  ifClick - if true, then click event for document will be added
-  ifKeyDown - if true, then keydown and keyup events for document will be added
-  ifEsc - if true, then when user clicks Esc key the event will be called
+  ifClick - deprecated, replaced by listenClick
+  ifKeyUpDown - deprecated, replaced by listenTab
+  ifEsc - deprecated, replaced by listenEsc
+  listenClick - if true, then click event for document will be added
+  listenTab - if true, then keydown and keyup listener for document will be added to detect tab key press
+  listenEsc - if true, then when user clicks Esc key the event will be called
   autoUnset - if true, then unsetBlurListener function will be called after callback
   debug - if true, all debug messages will be printed in console
 */
 function withOnBlur() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      _ref$ifClick = _ref.ifClick,
-      ifClick = _ref$ifClick === undefined ? true : _ref$ifClick,
-      _ref$ifKeyUpDown = _ref.ifKeyUpDown,
-      ifKeyUpDown = _ref$ifKeyUpDown === undefined ? true : _ref$ifKeyUpDown,
-      _ref$ifEsc = _ref.ifEsc,
-      ifEsc = _ref$ifEsc === undefined ? true : _ref$ifEsc,
-      _ref$autoUnset = _ref.autoUnset,
-      autoUnset = _ref$autoUnset === undefined ? false : _ref$autoUnset,
-      _ref$debug = _ref.debug,
-      debug = _ref$debug === undefined ? false : _ref$debug;
+  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var _props$ifClick = props.ifClick,
+      ifClick = _props$ifClick === undefined ? true : _props$ifClick,
+      _props$ifKeyUpDown = props.ifKeyUpDown,
+      ifKeyUpDown = _props$ifKeyUpDown === undefined ? true : _props$ifKeyUpDown,
+      _props$ifEsc = props.ifEsc,
+      ifEsc = _props$ifEsc === undefined ? true : _props$ifEsc,
+      _props$autoUnset = props.autoUnset,
+      autoUnset = _props$autoUnset === undefined ? false : _props$autoUnset,
+      _props$debug = props.debug,
+      debug = _props$debug === undefined ? false : _props$debug;
+  var _props$listenClick = props.listenClick,
+      listenClick = _props$listenClick === undefined ? ifClick : _props$listenClick,
+      _props$listenTab = props.listenTab,
+      listenTab = _props$listenTab === undefined ? ifKeyUpDown : _props$listenTab,
+      _props$listenEsc = props.listenEsc,
+      listenEsc = _props$listenEsc === undefined ? ifEsc : _props$listenEsc;
+
 
   var debugLog = debug ? console.debug : function () {};
 
   return function (WrappedComponent) {
-    if (!(ifClick || ifKeyUpDown || ifEsc)) return WrappedComponent;
+    if (!(listenClick || listenTab || listenEsc)) return WrappedComponent;
 
     var WithOnBlur = function (_React$PureComponent) {
       _inherits(WithOnBlur, _React$PureComponent);
 
       function WithOnBlur() {
-        var _ref2;
+        var _ref;
 
         var _temp, _this, _ret;
 
@@ -63,7 +73,7 @@ function withOnBlur() {
           args[_key] = arguments[_key];
         }
 
-        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = WithOnBlur.__proto__ || Object.getPrototypeOf(WithOnBlur)).call.apply(_ref2, [this].concat(args))), _this), _this.blurCallback = undefined, _this.isOnce = false, _this.checkedElement = null, _this.setBlurListener = function (callback) {
+        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = WithOnBlur.__proto__ || Object.getPrototypeOf(WithOnBlur)).call.apply(_ref, [this].concat(args))), _this), _this.blurCallback = undefined, _this.isOnce = false, _this.checkedElement = null, _this.setBlurListener = function (callback) {
           var once = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
           debugLog('react-onblur::setBlurListener');
@@ -72,18 +82,18 @@ function withOnBlur() {
           _this.isOnce = !!once;
           if (!callback) return false;
 
-          if (ifClick) document.addEventListener('click', _this.onDocumentClick);
-          if (ifEsc) document.addEventListener('keydown', _this.onDocumentEsc);
-          if (ifKeyUpDown) {
-            document.addEventListener('keyup', _this.onDocumentKeyUp);
-            document.addEventListener('keydown', _this.onDocumentKeyDown);
+          if (listenClick) document.addEventListener('click', _this.onDocumentClick, true);
+          if (listenEsc) document.addEventListener('keydown', _this.onDocumentEsc, true);
+          if (listenTab) {
+            document.addEventListener('keyup', _this.onDocumentKeyUp, true);
+            document.addEventListener('keydown', _this.onDocumentKeyDown, true);
           }
           return true;
         }, _this.unsetBlurListener = function () {
           debugLog('react-onblur::unsetBlurListener');
-          if (ifClick) document.removeEventListener('click', _this.onDocumentClick);
-          if (ifEsc) document.removeEventListener('keydown', _this.onDocumentEsc);
-          if (ifKeyUpDown) {
+          if (listenClick) document.removeEventListener('click', _this.onDocumentClick);
+          if (listenEsc) document.removeEventListener('keydown', _this.onDocumentEsc);
+          if (listenTab) {
             document.removeEventListener('keyup', _this.onDocumentKeyUp);
             document.removeEventListener('keydown', _this.onDocumentKeyDown);
           }
@@ -162,7 +172,7 @@ function withOnBlur() {
       return WithOnBlur;
     }(_react2.default.PureComponent);
 
-    WithOnBlur.displayName = 'WithOnBlur(' + (WrappedComponent.displayName || WrappedComponent.name || 'component') + ')';
+    WithOnBlur.displayName = 'WithOnBlur(' + (WrappedComponent.displayName || WrappedComponent.name || 'withOnBlur') + ')';
 
     return WithOnBlur;
   };
