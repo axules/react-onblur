@@ -57,9 +57,9 @@ WithOnBlurComponent.defaultProps = {
 
 const WithAutoOnBlurComponent = withOnBlur({ autoUnset: true })(WithOnBlurComponent);
 const WithoutEventsOnBlurComponent = withOnBlur({ 
-  ifClick: false, 
-  ifKeyUpDown: false, 
-  ifEsc: true 
+  listenClick: false, 
+  listenTab: false, 
+  listenEsc: true 
 })(WithOnBlurComponent);
 
 export default withOnBlur()(WithOnBlurComponent);

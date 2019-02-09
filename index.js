@@ -1,19 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 /*
-  ifClick - if true, then click event for document will be added
-  ifKeyDown - if true, then keydown and keyup events for document will be added
-  ifEsc - if true, then when user clicks Esc key the event will be called
+  ifClick - deprecated, replaced by listenClick
+  ifKeyUpDown - deprecated, replaced by listenTab
+  ifEsc - deprecated, replaced by listenEsc
+  listenClick - if true, then click event for document will be added
+  listenTab - if true, then keydown and keyup listener for document will be added to detect tab key press
+  listenEsc - if true, then when user clicks Esc key the event will be called
   autoUnset - if true, then unsetBlurListener function will be called after callback
   debug - if true, all debug messages will be printed in console
 */
-function withOnBlur({ ifClick = true, ifKeyUpDown = true, ifEsc = true, autoUnset = false, debug = false } = {}) {
+function withOnBlur(props = {}) {
+  const { 
+    ifClick = true,
+    ifKeyUpDown = true, 
+    ifEsc = true, 
+    autoUnset = false,
+    debug = false
+  } = props;
+  const { 
+    listenClick = ifClick,
+    listenTab = ifKeyUpDown,
+    listenEsc = ifEsc,
+  } = props;
+
   const debugLog = debug 
     ? console.debug
     : () => {};
 
   return function (WrappedComponent) {
-    if (!(ifClick || ifKeyUpDown || ifEsc)) return WrappedComponent;
+    if (!(listenClick || listenTab || listenEsc)) return WrappedComponent;
 
     class WithOnBlur extends React.PureComponent {
       blurCallback = undefined;
@@ -31,20 +47,20 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true, ifEsc = true, autoUnse
         this.isOnce = !!once;
         if (!callback) return false;
 
-        if (ifClick) document.addEventListener('click', this.onDocumentClick);
-        if (ifEsc) document.addEventListener('keydown', this.onDocumentEsc);
-        if (ifKeyUpDown) {
-          document.addEventListener('keyup', this.onDocumentKeyUp);
-          document.addEventListener('keydown', this.onDocumentKeyDown);
+        if (listenClick) document.addEventListener('click', this.onDocumentClick, true);
+        if (listenEsc) document.addEventListener('keydown', this.onDocumentEsc, true);
+        if (listenTab) {
+          document.addEventListener('keyup', this.onDocumentKeyUp, true);
+          document.addEventListener('keydown', this.onDocumentKeyDown, true);
         }
         return true;
       };
 
       unsetBlurListener = () => {
         debugLog('react-onblur::unsetBlurListener');
-        if (ifClick) document.removeEventListener('click', this.onDocumentClick);
-        if (ifEsc) document.removeEventListener('keydown', this.onDocumentEsc);
-        if (ifKeyUpDown) {
+        if (listenClick) document.removeEventListener('click', this.onDocumentClick);
+        if (listenEsc) document.removeEventListener('keydown', this.onDocumentEsc);
+        if (listenTab) {
           document.removeEventListener('keyup', this.onDocumentKeyUp);
           document.removeEventListener('keydown', this.onDocumentKeyDown);
         }
@@ -129,7 +145,7 @@ function withOnBlur({ ifClick = true, ifKeyUpDown = true, ifEsc = true, autoUnse
       }
     }
 
-    WithOnBlur.displayName = `WithOnBlur(${WrappedComponent.displayName || WrappedComponent.name || 'component'})`;
+    WithOnBlur.displayName = `WithOnBlur(${WrappedComponent.displayName || WrappedComponent.name || 'withOnBlur'})`;
 
     return WithOnBlur;
   };

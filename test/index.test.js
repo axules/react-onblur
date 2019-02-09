@@ -59,10 +59,10 @@ describe('withOnBlur', () => {
       wrappedComponent.find('#button_open').simulate('click');
       expect(document.addEventListener).toHaveBeenCalledTimes(4);
       expect(document.removeEventListener).toHaveBeenCalledTimes(0);
-      expect(document.addEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick]);
-      expect(document.addEventListener.mock.calls[1]).toEqual(['keydown', wrapper.instance().onDocumentEsc]);
-      expect(document.addEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp]);
-      expect(document.addEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown]);
+      expect(document.addEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick, true]);
+      expect(document.addEventListener.mock.calls[1]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
+      expect(document.addEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp, true]);
+      expect(document.addEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown, true]);
     });
   
     test('should remove events', () => {
@@ -259,7 +259,7 @@ describe('withOnBlur', () => {
       wrapper.instance().onDocumentKeyUp({ target: mountedComponent.find('#button_out').instance(), keyCode: 9 });
       
       expect(document.addEventListener).toHaveBeenCalledTimes(1);
-      expect(document.addEventListener.mock.calls[0]).toEqual(['keydown', wrapper.instance().onDocumentEsc]);
+      expect(document.addEventListener.mock.calls[0]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
       expect(document.removeEventListener).toHaveBeenCalledTimes(1);
       expect(document.removeEventListener.mock.calls[0]).toEqual(['keydown', wrapper.instance().onDocumentEsc]);
     });
