@@ -59,7 +59,7 @@ describe('withOnBlur', () => {
       wrappedComponent.find('#button_open').simulate('click');
       expect(document.addEventListener).toHaveBeenCalledTimes(4);
       expect(document.removeEventListener).toHaveBeenCalledTimes(0);
-      expect(document.addEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick, true]);
+      expect(document.addEventListener.mock.calls[0]).toEqual(['mouseup', wrapper.instance().onDocumentClick, true]);
       expect(document.addEventListener.mock.calls[1]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
       expect(document.addEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp, true]);
       expect(document.addEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown, true]);
@@ -71,10 +71,10 @@ describe('withOnBlur', () => {
       wrappedComponent.instance().props.unsetBlurListener();
 
       expect(document.removeEventListener).toHaveBeenCalledTimes(4);
-      expect(document.removeEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick]);
-      expect(document.removeEventListener.mock.calls[1]).toEqual(['keydown', wrapper.instance().onDocumentEsc]);
-      expect(document.removeEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp]);
-      expect(document.removeEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown]);
+      expect(document.removeEventListener.mock.calls[0]).toEqual(['mouseup', wrapper.instance().onDocumentClick, true]);
+      expect(document.removeEventListener.mock.calls[1]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
+      expect(document.removeEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp, true]);
+      expect(document.removeEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown, true]);
     });
   
     test('should remove events when unmount', () => {
@@ -87,10 +87,10 @@ describe('withOnBlur', () => {
       mountedComponent.unmount();
 
       expect(document.removeEventListener).toHaveBeenCalledTimes(4);
-      expect(document.removeEventListener.mock.calls[0]).toEqual(['click', wrapper.instance().onDocumentClick]);
-      expect(document.removeEventListener.mock.calls[1]).toEqual(['keydown', wrapper.instance().onDocumentEsc]);
-      expect(document.removeEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp]);
-      expect(document.removeEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown]);
+      expect(document.removeEventListener.mock.calls[0]).toEqual(['mouseup', wrapper.instance().onDocumentClick, true]);
+      expect(document.removeEventListener.mock.calls[1]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
+      expect(document.removeEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp, true]);
+      expect(document.removeEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown, true]);
     });
 
     test('should auto remove after click outside once', () => {
@@ -104,10 +104,10 @@ describe('withOnBlur', () => {
       wrapper.instance().onDocumentClick({ target: mountedComponent.find('#button_out').instance() });
       
       expect(document.removeEventListener).toHaveBeenCalledTimes(8);
-      expect(document.removeEventListener.mock.calls[4]).toEqual(['click', wrapper.instance().onDocumentClick]);
-      expect(document.removeEventListener.mock.calls[5]).toEqual(['keydown', wrapper.instance().onDocumentEsc]);
-      expect(document.removeEventListener.mock.calls[6]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp]);
-      expect(document.removeEventListener.mock.calls[7]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown]);
+      expect(document.removeEventListener.mock.calls[4]).toEqual(['mouseup', wrapper.instance().onDocumentClick, true]);
+      expect(document.removeEventListener.mock.calls[5]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
+      expect(document.removeEventListener.mock.calls[6]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp, true]);
+      expect(document.removeEventListener.mock.calls[7]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown, true]);
     });
 
     test('should auto remove after click outside always', () => {
@@ -121,10 +121,10 @@ describe('withOnBlur', () => {
       wrapper.instance().onDocumentClick({ target: mountedComponent.find('#button_out').instance() });
       
       expect(document.removeEventListener).toHaveBeenCalledTimes(8);
-      expect(document.removeEventListener.mock.calls[4]).toEqual(['click', wrapper.instance().onDocumentClick]);
-      expect(document.removeEventListener.mock.calls[5]).toEqual(['keydown', wrapper.instance().onDocumentEsc]);
-      expect(document.removeEventListener.mock.calls[6]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp]);
-      expect(document.removeEventListener.mock.calls[7]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown]);
+      expect(document.removeEventListener.mock.calls[4]).toEqual(['mouseup', wrapper.instance().onDocumentClick, true]);
+      expect(document.removeEventListener.mock.calls[5]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
+      expect(document.removeEventListener.mock.calls[6]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp, true]);
+      expect(document.removeEventListener.mock.calls[7]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown, true]);
     });
   
     test('should open component', () => {
@@ -261,7 +261,7 @@ describe('withOnBlur', () => {
       expect(document.addEventListener).toHaveBeenCalledTimes(1);
       expect(document.addEventListener.mock.calls[0]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
       expect(document.removeEventListener).toHaveBeenCalledTimes(1);
-      expect(document.removeEventListener.mock.calls[0]).toEqual(['keydown', wrapper.instance().onDocumentEsc]);
+      expect(document.removeEventListener.mock.calls[0]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
     });
   });  
 });

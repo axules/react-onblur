@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom';
   ifClick - deprecated, replaced by listenClick
   ifKeyUpDown - deprecated, replaced by listenTab
   ifEsc - deprecated, replaced by listenEsc
-  listenClick - if true, then click event for document will be added
+  listenClick - if true, then mouseup event for document will be added
   listenTab - if true, then keydown and keyup listener for document will be added to detect tab key press
-  listenEsc - if true, then when user clicks Esc key the event will be called
+  listenEsc - if true, then when user press Esc key the event will be called
   autoUnset - if true, then unsetBlurListener function will be called after callback
   debug - if true, all debug messages will be printed in console
 */
@@ -47,7 +47,7 @@ function withOnBlur(props = {}) {
         this.isOnce = !!once;
         if (!callback) return false;
 
-        if (listenClick) document.addEventListener('click', this.onDocumentClick, true);
+        if (listenClick) document.addEventListener('mouseup', this.onDocumentClick, true);
         if (listenEsc) document.addEventListener('keydown', this.onDocumentEsc, true);
         if (listenTab) {
           document.addEventListener('keyup', this.onDocumentKeyUp, true);
@@ -58,16 +58,16 @@ function withOnBlur(props = {}) {
 
       unsetBlurListener = () => {
         debugLog('react-onblur::unsetBlurListener');
-        if (listenClick) document.removeEventListener('click', this.onDocumentClick);
-        if (listenEsc) document.removeEventListener('keydown', this.onDocumentEsc);
+        if (listenClick) document.removeEventListener('mouseup', this.onDocumentClick, true);
+        if (listenEsc) document.removeEventListener('keydown', this.onDocumentEsc, true);
         if (listenTab) {
-          document.removeEventListener('keyup', this.onDocumentKeyUp);
-          document.removeEventListener('keydown', this.onDocumentKeyDown);
+          document.removeEventListener('keyup', this.onDocumentKeyUp, true);
+          document.removeEventListener('keydown', this.onDocumentKeyDown, true);
         }
       };
 
       onDocumentClick = e => {
-        debugLog('react-onblur::document click', e);
+        debugLog('react-onblur::document mouseup', e);
         if (e.target !== this.checkedElement) {
           this.checkAndBlur(e.target, e);
           this.checkedElement = e.target;
