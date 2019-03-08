@@ -106,7 +106,7 @@ Next, you can use this component in your App:
 ## HOC function arguments
 | args  | type | default | description |
 | - | - | - | - |
-| `listenClick` | bool | true | when `true` will add `mouseup` event for document
+| `listenClick` | bool | true | when `true` will add `mousedown` event for document
 | `listenTab` | bool | true | when `true` will add `keyup` and `keydown` listeners for document to check Tab key press
 | `listenEsc` | bool | true | when `true` will add `keydown` event for document to check Esc key is pressed
 | `debug` | bool | false | when `true` will write debug messages to console
