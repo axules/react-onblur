@@ -1,6 +1,6 @@
 {
   "name": "react-onblur",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": {
     "name": "Shelest Denis",
     "email": "axules@gmail.com"
@@ -46,7 +46,10 @@
       "<rootDir>/test/**/*.test.js"
     ]
   },
-  "dependencies": {},
+  "peerDependencies": {
+    "react": "^16.0.1",
+    "react-dom": "^16.0.1"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
