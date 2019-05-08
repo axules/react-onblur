@@ -146,6 +146,7 @@ function withOnBlur(props = {}) {
     }
 
     WithOnBlur.displayName = `WithOnBlur(${WrappedComponent.displayName || WrappedComponent.name || 'withOnBlur'})`;
+    WithOnBlur.WrappedComponent = WrappedComponent;
 
     return WithOnBlur;
   };
