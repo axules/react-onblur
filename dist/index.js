@@ -173,6 +173,7 @@ function withOnBlur() {
     }(_react2.default.PureComponent);
 
     WithOnBlur.displayName = 'WithOnBlur(' + (WrappedComponent.displayName || WrappedComponent.name || 'withOnBlur') + ')';
+    WithOnBlur.WrappedComponent = WrappedComponent;
 
     return WithOnBlur;
   };
