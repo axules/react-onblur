@@ -5,7 +5,6 @@ import WithOnBlurComponent, { WithAutoOnBlurComponent, WithoutEventsOnBlurCompon
 import './setupTests';
 
 describe('withOnBlur', () => {
-
   beforeAll(() => {
     document.addEventListener = jest.fn();
     document.removeEventListener = jest.fn();
@@ -28,17 +27,17 @@ describe('withOnBlur', () => {
     expect(wrappedInstance.props.myProp).toBe(10);
     comp.unmount();
   });
-
   
   describe('mount TestComponent', () => {
     let mountedComponent = null;
     let wrapper = null;
     let wrappedComponent = null;
-
+  
     beforeEach(() => {
       mountedComponent = mount(<TestComponent />);
       wrapper = mountedComponent.find(WithOnBlurComponent).first();
       wrappedComponent = wrapper.childAt(0);
+      global.console.error = jest.fn();
     });
 
     afterEach(() => {
@@ -64,6 +63,38 @@ describe('withOnBlur', () => {
       expect(document.addEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp, true]);
       expect(document.addEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown, true]);
     });
+
+    test('should print error message to console', () => {
+      wrappedComponent.instance().props.setBlurListener();
+      wrappedComponent.instance().props.setBlurListener(null);
+      wrappedComponent.instance().props.setBlurListener(10);
+      wrappedComponent.instance().props.setBlurListener(123);
+      expect(console.error).toHaveBeenCalledTimes(4);
+      expect(console.error.mock.calls[0][0]).toBe('First param for `setBlurListener` should be callback function or object of options');
+    });
+
+    test('should add events by object options', () => {
+      document.addEventListener.mockClear();
+      wrappedComponent.instance().props.setBlurListener({
+        onBlur: () => {}
+      });
+      expect(document.addEventListener).toHaveBeenCalledTimes(4);
+      expect(document.removeEventListener).toHaveBeenCalledTimes(0);
+      expect(document.addEventListener.mock.calls[0]).toEqual(['mousedown', wrapper.instance().onDocumentClick, true]);
+      expect(document.addEventListener.mock.calls[1]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
+      expect(document.addEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp, true]);
+      expect(document.addEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown, true]);
+    });
+
+    test('should print error message about onBlur to console', () => {
+      wrappedComponent.instance().props.setBlurListener({});
+      wrappedComponent.instance().props.setBlurListener({ onBlur: null });
+      wrappedComponent.instance().props.setBlurListener({ onBlur: 999 });
+      expect(console.error).toHaveBeenCalledTimes(3);
+      expect(console.error.mock.calls[0][0]).toBe('`onBlur` should be callback function');
+      expect(console.error.mock.calls[1][0]).toBe('`onBlur` should be callback function');
+      expect(console.error.mock.calls[2][0]).toBe('`onBlur` should be callback function');
+    });
   
     test('should remove events', () => {
       wrappedComponent.find('#button_open').simulate('click');
@@ -75,6 +106,42 @@ describe('withOnBlur', () => {
       expect(document.removeEventListener.mock.calls[1]).toEqual(['keydown', wrapper.instance().onDocumentEsc, true]);
       expect(document.removeEventListener.mock.calls[2]).toEqual(['keyup', wrapper.instance().onDocumentKeyUp, true]);
       expect(document.removeEventListener.mock.calls[3]).toEqual(['keydown', wrapper.instance().onDocumentKeyDown, true]);
+    });
+
+    test('should call checkInOutside handler function', () => {
+      const checkInOutside = jest.fn((el, isOutside) => isOutside);
+      wrappedComponent.instance().props.setBlurListener({
+        onBlur: () => {},
+        checkInOutside
+      });
+      const target = mountedComponent.find('#button_out').instance();
+      wrapper.instance().onDocumentClick({ target });
+      expect(checkInOutside).toHaveBeenCalledTimes(1);
+      expect(checkInOutside).toBeCalledWith(target, true);
+    });
+
+    test('should call onBlur after checkInOutside', () => {
+      const checkInOutside = jest.fn(() => true);
+      const onBlur = jest.fn();
+      wrappedComponent.instance().props.setBlurListener({
+        onBlur,
+        checkInOutside
+      });
+      const target = mountedComponent.find('#button_out').instance();
+      wrapper.instance().onDocumentClick({ target });
+      expect(onBlur).toHaveBeenCalledTimes(1);
+    });
+    
+    test('should not call onBlur after checkInOutside', () => {
+      const checkInOutside = jest.fn(() => false);
+      const onBlur = jest.fn();
+      wrappedComponent.instance().props.setBlurListener({
+        onBlur,
+        checkInOutside
+      });
+      const target = mountedComponent.find('#button_out').instance();
+      wrapper.instance().onDocumentClick({ target });
+      expect(onBlur).toHaveBeenCalledTimes(0);
     });
   
     test('should remove events when unmount', () => {
