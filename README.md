@@ -169,9 +169,7 @@ class DemoPortalComponent extends PureComponent {
     // which was moved to body by createPortal
     // For it we can use `isDomElementChild(parent, node)` from `react-onblur`
     // and if element is child of list then it returns false.
-    isOutside
-      ? !isDomElementChild(this.domMenu.current, element) 
-      : false;
+    isOutside && !isDomElementChild(this.domMenu.current, element) 
   );
 
   render() {
