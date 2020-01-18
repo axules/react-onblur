@@ -56,7 +56,7 @@ class DemoComponent extends PureComponent {
     const { isOpened } = this.state;
     // `setBlurListener` and `unsetBlurListener` props were added by withOnBlur
     const { setBlurListener, unsetBlurListener } = this.props;
-        
+
     if (isOpened !== prevState.isOpened) {
 
       // if our list was opened, then we will add listeners,
@@ -118,7 +118,7 @@ Next, you can use this component in your App:
 | `listenTab` | bool | true | when `true` will add `keyup` and `keydown` listeners for document to check Tab key press
 | `listenEsc` | bool | true | when `true` will add `keydown` event for document to check Esc key is pressed
 | `debug` | bool | false | when `true` will write debug messages to console
-| `autoUnset` | bool | false | if `true` then `unsetBlurListener` will be called after callback action call once your component is unfocused or user will click outside of your component 
+| `autoUnset` | bool | false | if `true` then `unsetBlurListener` will be called after callback action call once your component is unfocused or user will click outside of your component
 
 ### Example
 ```javascript
@@ -155,7 +155,7 @@ class DemoPortalComponent extends PureComponent {
       setBlurListener({
         checkInOutside: this.checkInOutside,
         onBlur: this.onBlur,
-        once: true 
+        once: true
       })
     }
   }
@@ -165,11 +165,11 @@ class DemoPortalComponent extends PureComponent {
   onBlur = () => this.setState({ isOpened: false });
 
   checkInOutside = (element, isOutside) => (
-    // if it is in outside then we should check that it is not in our list, 
+    // if it is in outside then we should check that it is not in our list,
     // which was moved to body by createPortal
     // For it we can use `isDomElementChild(parent, node)` from `react-onblur`
     // and if element is child of list then it returns false.
-    isOutside && !isDomElementChild(this.domMenu.current, element) 
+    isOutside && !isDomElementChild(this.domMenu.current, element)
   );
 
   render() {
@@ -183,7 +183,7 @@ class DemoPortalComponent extends PureComponent {
             <ul ref={this.domMenu}>
               // ... list items
             </ul>,
-            document.querySelector('body)
+            document.querySelector('body')
           )
         )}
       </div>
