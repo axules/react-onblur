@@ -89,9 +89,7 @@ function withOnBlur(props) {
   return function (WrappedComponent) {
     if (!(listenClick || listenTab || listenEsc)) return WrappedComponent;
 
-    var WithOnBlur =
-    /*#__PURE__*/
-    function (_React$PureComponent) {
+    var WithOnBlur = /*#__PURE__*/function (_React$PureComponent) {
       _inheritsLoose(WithOnBlur, _React$PureComponent);
 
       function WithOnBlur() {
@@ -258,7 +256,7 @@ function withOnBlur(props) {
       };
 
       _proto.render = function render() {
-        return _react.default.createElement(WrappedComponent, _extends({}, this.props, {
+        return /*#__PURE__*/_react.default.createElement(WrappedComponent, _extends({}, this.props, {
           setBlurListener: this.setBlurListener,
           unsetBlurListener: this.unsetBlurListener
         }));
