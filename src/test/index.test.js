@@ -18,13 +18,12 @@ describe('withOnBlur', () => {
     document.removeEventListener.mockClear();
   });
 
-  test('should override passed setBlurListener, unsetBlurListener, setToggleListener functions', () => {
+  test('should override passed setBlurListener, unsetBlurListener functions', () => {
     const comp = create(
-      <WithOnBlurComponent setBlurListener={10} unsetBlurListener={11} setToggleListener={12} />
+      <WithOnBlurComponent setBlurListener={10} unsetBlurListener={11} />
     ).root.findByType(RootCmp);
     expect(typeof(comp.props.setBlurListener)).toBe('function');
     expect(typeof(comp.props.unsetBlurListener)).toBe('function');
-    expect(typeof(comp.props.setToggleListener)).toBe('function');
   });
 
   test('should give custom props', () => {
@@ -55,10 +54,9 @@ describe('withOnBlur', () => {
       render.unmount();
     });
 
-    test('should give setBlurListener, unsetBlurListener, setToggleListener functions to child component', () => {
+    test('should give setBlurListener, unsetBlurListener functions to child component', () => {
       expect(typeof(wrappedComponent.props.setBlurListener)).toBe('function');
       expect(typeof(wrappedComponent.props.unsetBlurListener)).toBe('function');
-      expect(typeof(wrappedComponent.props.setToggleListener)).toBe('function');
     });
 
     test('default state component', () => {
@@ -147,43 +145,13 @@ describe('withOnBlur', () => {
       });
     });
 
-    describe('setToggleListener should print error message', () => {
-      const testDataOnBlur = [
-        [{}, '\'onBlur\' is required'],
-        [{ onBlur: null }, '\'onBlur\' is required'],
-        [{ onBlur: 999 }, '`onBlur` should be callback function']
-      ].map(el => [{ onFocus: () => null, ...el[0] }].concat(el.slice(1)));
-
-      const testDataOnFocus = [
-        [{}, '\'onFocus\' is required'],
-        [{ onFocus: null }, '\'onFocus\' is required'],
-        [{ onFocus: 999 }, '`onFocus` should be callback function']
-      ].map(el => [{ onBlur: () => null, ...el[0] }].concat(el.slice(1)));
-
-      const testDataCheckInOutside = [
-        [{ checkInOutside: 999 }, '`checkInOutside` should be function(node)']
-      ].map(el => [{ onBlur: () => null, onFocus: () => null, ...el[0] }].concat(el.slice(1)));
-
-      const testDataGetRootNode = [
-        [{ getRootNode: 999 }, '`getRootNode` should be function(this)']
-      ].map(el => [{ onBlur: () => null, onFocus: () => null, ...el[0] }].concat(el.slice(1)));
-
-      const testData = [].concat(testDataOnBlur, testDataOnFocus, testDataCheckInOutside, testDataGetRootNode);
-
-      test.each(testData)('%#. %j => %s', (props, expected) => {
-        wrappedComponent.props.setToggleListener(props);
-        expect(console.error).toHaveBeenCalledTimes(1);
-        expect(console.error.mock.calls[0][0]).toBe(expected);
-      });
-    });
-
     test('setBlurListener should print error message about onBlur to console', () => {
       wrappedComponent.props.setBlurListener({});
       wrappedComponent.props.setBlurListener({ onBlur: null });
       wrappedComponent.props.setBlurListener({ onBlur: 999 });
       expect(console.error).toHaveBeenCalledTimes(3);
-      expect(console.error.mock.calls[0][0]).toBe('\'onBlur\' is required');
-      expect(console.error.mock.calls[1][0]).toBe('\'onBlur\' is required');
+      expect(console.error.mock.calls[0][0]).toBe('`onBlur` is required');
+      expect(console.error.mock.calls[1][0]).toBe('`onBlur` is required');
       expect(console.error.mock.calls[2][0]).toBe('`onBlur` should be callback function');
     });
 

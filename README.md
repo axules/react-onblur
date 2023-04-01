@@ -14,7 +14,7 @@ It is simple HOC function
 ```javascript
 import withOnBlur from "react-onblur";
 // ...
-export default withOnBlur(/* args */)(YourReactCompoenent);
+export default withOnBlur(/* args */)(YourReactComponent);
 ```
 
 which puts in your component two extra props
@@ -24,14 +24,6 @@ setBlurListener: function (callbackOrOptions: Function(event) or Object[, once: 
 
 ```
 unsetBlurListener: function ()
-```
-
-```
-setToggleListener: function (Object)
-```
-
-```
-unsetToggleListener: function ()
 ```
 
 ### **`setBlurListener`** should be called when you want to add events to document.
@@ -48,10 +40,6 @@ unsetToggleListener: function ()
 ### **`unsetBlurListener`** should be called when your want to remove events from document.
 
 (!!!) `unsetBlurListener` will be called in `componentWillUnmount` always.
-
-### **`setToggleListener`** should be called when you want to add events .
-
-### **`unsetToggleListener`** should be called when your want to remove events from document.
 
 TODO
 
@@ -144,7 +132,7 @@ export default withOnBlur({
   listenTab: false,
   debug: true,
   autoUnset: true
-})(YourReactCompoenent);
+})(YourReactComponent);
 ```
 
 ## What is `checkInOutside`? And why you should use it?

@@ -17,7 +17,6 @@ class TestComponent extends PureComponent {
         <div>Example component</div>
         <div>
           <button id="button_out">Parent button</button>
-          <button id="button_toggle">Toggle button</button>
         </div>
 
         {this.renderOnBlurComponent()}

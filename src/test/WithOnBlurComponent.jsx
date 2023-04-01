@@ -47,14 +47,12 @@ WithOnBlurComponent.propTypes = {
   setBlurListener: PropTypes.func.isRequired,
   unsetBlurListener: PropTypes.func.isRequired,
   isOnce: PropTypes.bool,
-  toggle: PropTypes.bool,
 };
 
 WithOnBlurComponent.defaultProps = {
   setBlurListener: () => null,
   unsetBlurListener: () => null,
   isOnce: undefined,
-  toggle: false
 };
 
 const WithAutoOnBlurComponent = withOnBlur({ autoUnset: true })(WithOnBlurComponent);

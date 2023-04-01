@@ -21,6 +21,40 @@ export function isDomElementChild(parentDomNode, domNode) {
   return false;
 }
 
+export function validateParams(
+  params,
+  requiredParams = { onBlur: true, checkInOutside: false, getRootNode: false, once: false }
+) {
+  const required = Object.entries(requiredParams).filter(([, v]) => v).map(([k]) => k);
+
+  for (let i = 0; i < required.length; i += 1) {
+    const k = required[i];
+    if (!params[k]) {
+      console.error(`\`${k}\` is required`);
+      return false;
+    }
+  }
+
+  const { onBlur, checkInOutside, getRootNode } = params;
+
+  if (onBlur && typeof(onBlur) !== 'function') {
+    console.error('`onBlur` should be callback function');
+    return false;
+  }
+
+  if (checkInOutside && typeof(checkInOutside) !== 'function') {
+    console.error('`checkInOutside` should be function(node)');
+    return false;
+  }
+
+  if (getRootNode && typeof(getRootNode) !== 'function') {
+    console.error('`getRootNode` should be function(this)');
+    return false;
+  }
+
+  return true;
+}
+
 /**
  * @param {Boolean} listenClick - if true, then mousedown event for document will be added
  * @param {Boolean} listenTab - if true, then keydown and keyup listener for document will be added to detect tab key press
@@ -70,8 +104,6 @@ export function withOnBlur(props = {}) {
 
       setWorkingParams = (params) => {
         this.blurCallback = undefined;
-        this.focusCallback = undefined;
-        this.focusNode = undefined;
         this.checkInOutside = undefined;
         this.getRootNode = undefined;
         this.isOnce = autoUnset;
@@ -84,8 +116,6 @@ export function withOnBlur(props = {}) {
 
         if (params) {
           this.blurCallback = params.onBlur;
-          this.focusCallback = params.onFocus;
-          // this.focusNode = undefined;
           this.checkInOutside = params.checkInOutside;
           this.getRootNode = params.getRootNode;
           this.isOnce = params.once ?? autoUnset;
@@ -97,48 +127,8 @@ export function withOnBlur(props = {}) {
         }
       };
 
-      validateParams = (
-        params,
-        requiredParams = { onBlur: true, onFocus: false, checkInOutside: false, getRootNode: false, once: false }
-      ) => {
-        const required = Object.entries(requiredParams).filter(([, v]) => v).map(([k]) => k);
-
-        for (let i = 0; i < required.length; i += 1) {
-          const k = required[i];
-          if (!params[k]) {
-            console.error(`'${k}' is required`);
-            return false;
-          }
-        }
-
-        const { onBlur, onFocus, checkInOutside, getRootNode } = params;
-
-        if (onBlur && typeof(onBlur) !== 'function') {
-          console.error('`onBlur` should be callback function');
-          return false;
-        }
-
-        if (onFocus && typeof(onFocus) !== 'function') {
-          console.error('`onFocus` should be callback function');
-          return false;
-        }
-
-        if (checkInOutside && typeof(checkInOutside) !== 'function') {
-          console.error('`checkInOutside` should be function(node)');
-          return false;
-        }
-
-        if (getRootNode && typeof(getRootNode) !== 'function') {
-          console.error('`getRootNode` should be function(this)');
-          return false;
-        }
-
-        return true;
-      };
-
       setBlurListener = (callbackOrOptions, once = undefined) => {
         debugLog('setBlurListener');
-        this.removeFocusListener();
         this.setWorkingParams();
 
         if (!callbackOrOptions || !['function', 'object'].includes(typeof(callbackOrOptions))) {
@@ -147,7 +137,7 @@ export function withOnBlur(props = {}) {
         }
         const options = this.prepareOptions(callbackOrOptions, once);
 
-        if (!this.validateParams(options)) {
+        if (!validateParams(options)) {
           return false;
         }
 
@@ -161,7 +151,6 @@ export function withOnBlur(props = {}) {
       unsetListeners = () => {
         debugLog('unsetListeners');
         this.removeDocumentListeners(this.listeners);
-        this.removeFocusListener();
       };
 
       addDocumentListeners = (listenersToAdd = {}) => {
@@ -191,44 +180,6 @@ export function withOnBlur(props = {}) {
           listenEsc: !listeners.listenEsc,
           listenTab: !listeners.listenTab,
         });
-      };
-
-      setToggleListener = (params) => {
-        debugLog('setToggleListener');
-        this.setWorkingParams();
-        this.removeFocusListener();
-
-        if (!this.validateParams(params, { onBlur: true, onFocus: true })) {
-          return false;
-        }
-        this.setWorkingParams({ ...params, once: true });
-        // remove listeners that shouldn't be active
-        this.removeExtraBlurListeners(this.listeners);
-        this.addFocusListener(this.getParentNode());
-        return true;
-      };
-
-      addFocusListener = (node) => {
-        if (this.focusNode !== node) {
-          debugLog('addFocusListener', node);
-          this.focusNode = node;
-          node.addEventListener('focus', this.onFocus, true);
-        }
-      };
-
-      removeFocusListener = () => {
-        if (this.focusNode) {
-          debugLog('removeFocusListener', this.focusNode);
-          this.focusNode = null;
-          this.focusNode.removeEventListener('focus', this.onFocus, true);
-        }
-      };
-
-      onFocus = e => {
-        debugLog('parent node focus', e);
-        if (this.focusCallback) this.focusCallback(e);
-        this.removeExtraBlurListeners(this.listeners);
-        this.addDocumentListeners(this.listeners);
       };
 
       onDocumentClick = e => {
@@ -311,8 +262,6 @@ export function withOnBlur(props = {}) {
             {...this.props}
             setBlurListener={this.setBlurListener}
             unsetBlurListener={this.unsetListeners}
-            setToggleListener={this.setToggleListener}
-            unsetToggleListener={this.unsetListeners}
           />
         );
       }
