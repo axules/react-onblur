@@ -4,6 +4,7 @@ exports.__esModule = true;
 exports.consoleDebug = consoleDebug;
 exports.default = void 0;
 exports.isDomElementChild = isDomElementChild;
+exports.validateParams = validateParams;
 exports.withOnBlur = withOnBlur;
 
 var _react = _interopRequireWildcard(require("react"));
@@ -52,18 +53,64 @@ function isDomElementChild(parentDomNode, domNode) {
 
   return false;
 }
+
+function validateParams(params, requiredParams) {
+  if (requiredParams === void 0) {
+    requiredParams = {
+      onBlur: true,
+      checkInOutside: false,
+      getRootNode: false,
+      once: false
+    };
+  }
+
+  var required = Object.entries(requiredParams).filter(function (_ref) {
+    var v = _ref[1];
+    return v;
+  }).map(function (_ref2) {
+    var k = _ref2[0];
+    return k;
+  });
+
+  for (var i = 0; i < required.length; i += 1) {
+    var k = required[i];
+
+    if (!params[k]) {
+      console.error("`" + k + "` is required");
+      return false;
+    }
+  }
+
+  var onBlur = params.onBlur,
+      checkInOutside = params.checkInOutside,
+      getRootNode = params.getRootNode;
+
+  if (onBlur && typeof onBlur !== 'function') {
+    console.error('`onBlur` should be callback function');
+    return false;
+  }
+
+  if (checkInOutside && typeof checkInOutside !== 'function') {
+    console.error('`checkInOutside` should be function(node)');
+    return false;
+  }
+
+  if (getRootNode && typeof getRootNode !== 'function') {
+    console.error('`getRootNode` should be function(this)');
+    return false;
+  }
+
+  return true;
+}
 /**
  * @param {Boolean} listenClick - if true, then mousedown event for document will be added
  * @param {Boolean} listenTab - if true, then keydown and keyup listener for document will be added to detect tab key press
  * @param {Boolean} listenEsc - if true, then when user press Esc key the event will be called
  * @param {Boolean} autoUnset - if true, then unsetBlurListener function will be called after callback
  * @param {Boolean} debug - if true, all debug messages will be printed in console
- * @deprecated replaced by listenClick
- * @param {Boolean} ifClick
- * @deprecated replaced by listenTab
- * @param {Boolean} ifKeyUpDown
- * @deprecated replaced by listenEsc
- * @param {Boolean} ifEsc
+ * @param {Boolean} ifClick - Deprecated: replaced by listenClick
+ * @param {Boolean} ifKeyUpDown - Deprecated: replaced by listenTab
+ * @param {Boolean} ifEsc - Deprecated: replaced by listenEsc
  * @returns {PureComponent}
  */
 
@@ -126,8 +173,6 @@ function withOnBlur(props) {
 
         _this.setWorkingParams = function (params) {
           _this.blurCallback = undefined;
-          _this.focusCallback = undefined;
-          _this.focusNode = undefined;
           _this.checkInOutside = undefined;
           _this.getRootNode = undefined;
           _this.isOnce = autoUnset;
@@ -142,8 +187,6 @@ function withOnBlur(props) {
             var _params$once, _params$listenClick, _params$listenTab, _params$listenEsc;
 
             _this.blurCallback = params.onBlur;
-            _this.focusCallback = params.onFocus; // this.focusNode = undefined;
-
             _this.checkInOutside = params.checkInOutside;
             _this.getRootNode = params.getRootNode;
             _this.isOnce = (_params$once = params.once) != null ? _params$once : autoUnset;
@@ -155,70 +198,12 @@ function withOnBlur(props) {
           }
         };
 
-        _this.validateParams = function (params, requiredParams) {
-          if (requiredParams === void 0) {
-            requiredParams = {
-              onBlur: true,
-              onFocus: false,
-              checkInOutside: false,
-              getRootNode: false,
-              once: false
-            };
-          }
-
-          var required = Object.entries(requiredParams).filter(function (_ref) {
-            var v = _ref[1];
-            return v;
-          }).map(function (_ref2) {
-            var k = _ref2[0];
-            return k;
-          });
-
-          for (var i = 0; i < required.length; i += 1) {
-            var k = required[i];
-
-            if (!params[k]) {
-              console.error("'" + k + "' is required");
-              return false;
-            }
-          }
-
-          var onBlur = params.onBlur,
-              onFocus = params.onFocus,
-              checkInOutside = params.checkInOutside,
-              getRootNode = params.getRootNode;
-
-          if (onBlur && typeof onBlur !== 'function') {
-            console.error('`onBlur` should be callback function');
-            return false;
-          }
-
-          if (onFocus && typeof onFocus !== 'function') {
-            console.error('`onFocus` should be callback function');
-            return false;
-          }
-
-          if (checkInOutside && typeof checkInOutside !== 'function') {
-            console.error('`checkInOutside` should be function(node)');
-            return false;
-          }
-
-          if (getRootNode && typeof getRootNode !== 'function') {
-            console.error('`getRootNode` should be function(this)');
-            return false;
-          }
-
-          return true;
-        };
-
         _this.setBlurListener = function (callbackOrOptions, once) {
           if (once === void 0) {
             once = undefined;
           }
 
           debugLog('setBlurListener');
-
-          _this.removeFocusListener();
 
           _this.setWorkingParams();
 
@@ -229,7 +214,7 @@ function withOnBlur(props) {
 
           var options = _this.prepareOptions(callbackOrOptions, once);
 
-          if (!_this.validateParams(options)) {
+          if (!validateParams(options)) {
             return false;
           }
 
@@ -243,12 +228,10 @@ function withOnBlur(props) {
           return true;
         };
 
-        _this.unsetBlurToggleListener = function () {
-          debugLog('unsetBlurToggleListener');
+        _this.unsetListeners = function () {
+          debugLog('unsetListeners');
 
           _this.removeDocumentListeners(_this.listeners);
-
-          _this.removeFocusListener();
         };
 
         _this.addDocumentListeners = function (listenersToAdd) {
@@ -291,58 +274,6 @@ function withOnBlur(props) {
             listenEsc: !listeners.listenEsc,
             listenTab: !listeners.listenTab
           });
-        };
-
-        _this.setToggleListener = function (params) {
-          debugLog('setToggleListener');
-
-          _this.setWorkingParams();
-
-          _this.removeFocusListener();
-
-          if (!_this.validateParams(params, {
-            onBlur: true,
-            onFocus: true
-          })) {
-            return false;
-          }
-
-          _this.setWorkingParams(Object.assign({}, params, {
-            once: true
-          })); // remove listeners that shouldn't be active
-
-
-          _this.removeExtraBlurListeners(_this.listeners);
-
-          _this.addFocusListener(_this.getParentNode());
-
-          return true;
-        };
-
-        _this.addFocusListener = function (node) {
-          if (_this.focusNode !== node) {
-            debugLog('addFocusListener', node);
-            _this.focusNode = node;
-            node.addEventListener('focus', _this.onFocus, true);
-          }
-        };
-
-        _this.removeFocusListener = function () {
-          if (_this.focusNode) {
-            debugLog('removeFocusListener', _this.focusNode);
-            _this.focusNode = null;
-
-            _this.focusNode.removeEventListener('focus', _this.onFocus, true);
-          }
-        };
-
-        _this.onFocus = function (e) {
-          debugLog('parent node focus', e);
-          if (_this.focusCallback) _this.focusCallback(e);
-
-          _this.removeExtraBlurListeners(_this.listeners);
-
-          _this.addDocumentListeners(_this.listeners);
         };
 
         _this.onDocumentClick = function (e) {
@@ -415,7 +346,7 @@ function withOnBlur(props) {
           if (_this.isOnce) {
             debugLog('blur auto unset');
 
-            _this.unsetBlurToggleListener();
+            _this.unsetListeners();
           }
         };
 
@@ -441,15 +372,13 @@ function withOnBlur(props) {
 
       _proto.componentWillUnmount = function componentWillUnmount() {
         debugLog('componentWillUnmount');
-        this.unsetBlurToggleListener();
+        this.unsetListeners();
       };
 
       _proto.render = function render() {
         return /*#__PURE__*/_react.default.createElement(WrappedComponent, _extends({}, this.props, {
           setBlurListener: this.setBlurListener,
-          unsetBlurListener: this.unsetBlurToggleListener,
-          setToggleListener: this.setToggleListener,
-          unsetToggleListener: this.unsetBlurToggleListener
+          unsetBlurListener: this.unsetListeners
         }));
       };
 
