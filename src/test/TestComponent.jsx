@@ -12,13 +12,12 @@ class TestComponent extends PureComponent {
   }
 
   render() {
-    
-
     return (
       <div>
         <div>Example component</div>
         <div>
           <button id="button_out">Parent button</button>
+          <button id="button_toggle">Toggle button</button>
         </div>
 
         {this.renderOnBlurComponent()}
@@ -34,7 +33,7 @@ TestComponent.propTypes = {
 };
 
 TestComponent.defaultProps = {
-  isOnce: false,
+  isOnce: undefined,
   isAuto: false,
   isEmpty: false
 };

@@ -26,7 +26,15 @@ setBlurListener: function (callbackOrOptions: Function(event) or Object[, once: 
 unsetBlurListener: function ()
 ```
 
-### **`setBlurListener`** should be called when you want add events to document.
+```
+setToggleListener: function (Object)
+```
+
+```
+unsetToggleListener: function ()
+```
+
+### **`setBlurListener`** should be called when you want to add events to document.
 
 * `callbackOrOptions`: Function or Object.
   * If it is *Function*, then it will be called (with event arg) once your component is unfocused or a user clicks outside of your component.
@@ -35,10 +43,17 @@ unsetBlurListener: function ()
     * `once`: Boolean, optional. The same that second argument of this function.
     * `checkInOutside`: Function(domNode, isOutside): Boolean, optional. This function will be called always, when each of selected events are fired (e.g. when a user clicks on element on page or press key). It takes dom element target of an event  and a Boolean sign that this element is outside. It should return *Boolean* value as sign that this element is outside. If it returns true then `onBlur` will be called. More information in next part of this doc.
 * `once`: Boolean. If true then `unsetBlurListener` will be called after `callback` once your component is unfocused or a user clicks outside of your component.
+* `getRootNode`: Function(this). Should return parent node, all targets out of this node will handle 'onBlur'.
 
 ### **`unsetBlurListener`** should be called when your want to remove events from document.
 
 (!!!) `unsetBlurListener` will be called in `componentWillUnmount` always.
+
+### **`setToggleListener`** should be called when you want to add events .
+
+### **`unsetToggleListener`** should be called when your want to remove events from document.
+
+TODO
 
 ## How can you use it?
 

@@ -1,15 +1,15 @@
 {
   "plugins": [
-    "@babel/plugin-proposal-class-properties"
+    ["@babel/plugin-proposal-class-properties", { "loose": true}]
   ],
   "presets": [
-    "@babel/preset-react",
+    ["@babel/preset-react"],
     ["@babel/preset-env", {
       "useBuiltIns": "entry",
-      "corejs": 3,
+      "corejs": { "version": "3.24", "proposals": true },
       "loose": true,
-      "forceAllTransforms": false,
-      "targets": "defaults, not dead"
+      "forceAllTransforms": false
+      // "targets": "defaults, not dead"
     }]
   ]
 }
