@@ -115,29 +115,29 @@ function validateParams(params, requiredParams) {
  */
 
 
-function withOnBlur(props) {
-  if (props === void 0) {
-    props = {};
+function withOnBlur(params) {
+  if (params === void 0) {
+    params = {};
   }
 
-  var _props = props,
-      _props$ifClick = _props.ifClick,
-      ifClick = _props$ifClick === void 0 ? true : _props$ifClick,
-      _props$ifKeyUpDown = _props.ifKeyUpDown,
-      ifKeyUpDown = _props$ifKeyUpDown === void 0 ? true : _props$ifKeyUpDown,
-      _props$ifEsc = _props.ifEsc,
-      ifEsc = _props$ifEsc === void 0 ? true : _props$ifEsc,
-      _props$autoUnset = _props.autoUnset,
-      autoUnset = _props$autoUnset === void 0 ? false : _props$autoUnset,
-      _props$debug = _props.debug,
-      debug = _props$debug === void 0 ? false : _props$debug;
-  var _props2 = props,
-      _props2$listenClick = _props2.listenClick,
-      listenClick = _props2$listenClick === void 0 ? ifClick : _props2$listenClick,
-      _props2$listenTab = _props2.listenTab,
-      listenTab = _props2$listenTab === void 0 ? ifKeyUpDown : _props2$listenTab,
-      _props2$listenEsc = _props2.listenEsc,
-      listenEsc = _props2$listenEsc === void 0 ? ifEsc : _props2$listenEsc;
+  var _params = params,
+      _params$ifClick = _params.ifClick,
+      ifClick = _params$ifClick === void 0 ? true : _params$ifClick,
+      _params$ifKeyUpDown = _params.ifKeyUpDown,
+      ifKeyUpDown = _params$ifKeyUpDown === void 0 ? true : _params$ifKeyUpDown,
+      _params$ifEsc = _params.ifEsc,
+      ifEsc = _params$ifEsc === void 0 ? true : _params$ifEsc,
+      _params$autoUnset = _params.autoUnset,
+      autoUnset = _params$autoUnset === void 0 ? false : _params$autoUnset,
+      _params$debug = _params.debug,
+      debug = _params$debug === void 0 ? false : _params$debug;
+  var _params2 = params,
+      _params2$listenClick = _params2.listenClick,
+      listenClick = _params2$listenClick === void 0 ? ifClick : _params2$listenClick,
+      _params2$listenTab = _params2.listenTab,
+      listenTab = _params2$listenTab === void 0 ? ifKeyUpDown : _params2$listenTab,
+      _params2$listenEsc = _params2.listenEsc,
+      listenEsc = _params2$listenEsc === void 0 ? ifEsc : _params2$listenEsc;
   var debugLog = debug ? consoleDebug : function () {
     return undefined;
   };
@@ -235,10 +235,6 @@ function withOnBlur(props) {
         };
 
         _this.addDocumentListeners = function (listenersToAdd) {
-          if (listenersToAdd === void 0) {
-            listenersToAdd = {};
-          }
-
           debugLog('addDocumentListeners', listenersToAdd);
           if (listenersToAdd.listenClick) document.addEventListener('mousedown', _this.onDocumentClick, true);
           if (listenersToAdd.listenEsc) document.addEventListener('keydown', _this.onDocumentEsc, true);
@@ -250,10 +246,6 @@ function withOnBlur(props) {
         };
 
         _this.removeDocumentListeners = function (listenersToRemove) {
-          if (listenersToRemove === void 0) {
-            listenersToRemove = {};
-          }
-
           debugLog('removeDocumentListeners', listenersToRemove);
           if (listenersToRemove.listenClick) document.removeEventListener('mousedown', _this.onDocumentClick, true);
           if (listenersToRemove.listenEsc) document.removeEventListener('keydown', _this.onDocumentEsc, true);
@@ -372,7 +364,7 @@ function withOnBlur(props) {
 
       _proto.componentWillUnmount = function componentWillUnmount() {
         debugLog('componentWillUnmount');
-        this.unsetListeners();
+        this.removeExtraBlurListeners({});
       };
 
       _proto.render = function render() {

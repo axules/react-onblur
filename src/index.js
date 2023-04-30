@@ -66,19 +66,19 @@ export function validateParams(
  * @param {Boolean} ifEsc - Deprecated: replaced by listenEsc
  * @returns {PureComponent}
  */
-export function withOnBlur(props = {}) {
+export function withOnBlur(params = {}) {
   const {
     ifClick = true,
     ifKeyUpDown = true,
     ifEsc = true,
     autoUnset = false,
     debug = false
-  } = props;
+  } = params;
   const {
     listenClick = ifClick,
     listenTab = ifKeyUpDown,
     listenEsc = ifEsc,
-  } = props;
+  } = params;
 
   const debugLog = debug ? consoleDebug : () => undefined;
 
@@ -93,7 +93,7 @@ export function withOnBlur(props = {}) {
 
       componentWillUnmount() {
         debugLog('componentWillUnmount');
-        this.unsetListeners();
+        this.removeExtraBlurListeners({});
       }
 
       prepareOptions = (callbackOrOptions, once = undefined) => {
@@ -136,7 +136,6 @@ export function withOnBlur(props = {}) {
           return false;
         }
         const options = this.prepareOptions(callbackOrOptions, once);
-
         if (!validateParams(options)) {
           return false;
         }
@@ -153,7 +152,7 @@ export function withOnBlur(props = {}) {
         this.removeDocumentListeners(this.listeners);
       };
 
-      addDocumentListeners = (listenersToAdd = {}) => {
+      addDocumentListeners = (listenersToAdd) => {
         debugLog('addDocumentListeners', listenersToAdd);
 
         if (listenersToAdd.listenClick) document.addEventListener('mousedown', this.onDocumentClick, true);
@@ -164,7 +163,7 @@ export function withOnBlur(props = {}) {
         }
       };
 
-      removeDocumentListeners = (listenersToRemove = {}) => {
+      removeDocumentListeners = (listenersToRemove) => {
         debugLog('removeDocumentListeners', listenersToRemove);
         if (listenersToRemove.listenClick) document.removeEventListener('mousedown', this.onDocumentClick, true);
         if (listenersToRemove.listenEsc) document.removeEventListener('keydown', this.onDocumentEsc, true);
