@@ -20,14 +20,14 @@ describe('isDomElementChild', () => {
 
   test('should return false', () => {
     expect(isDomElementChild(
-      parent, 
+      parent,
       { parentNode: { parentNode: { parentNode: null } } }
     )).toBe(false);
   });
 
   test('should return true', () => {
     expect(isDomElementChild(
-      parent, 
+      parent,
       { parentNode: { parentNode: { parentNode: parent } } }
     )).toBe(true);
   });

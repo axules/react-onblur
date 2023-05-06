@@ -1,5 +1,5 @@
 {
-    "parser": "babel-eslint",
+    "parser": "@babel/eslint-parser",
     "env": {
         "browser": true,
         "jest":true
@@ -45,6 +45,7 @@
         "callback-return": "error"
     },
     "globals": {
-        "module": true
+        "module": true,
+        "global": true
     }
   }

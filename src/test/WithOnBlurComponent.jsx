@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import withOnBlur from '../index';
+import { withOnBlur } from '../index';
 
-class WithOnBlurComponent extends PureComponent {
+export class WithOnBlurComponent extends PureComponent {
   state = {
     isOpened: false
   };
@@ -19,7 +19,7 @@ class WithOnBlurComponent extends PureComponent {
 
   onBlurHandler = () => this.setState({ isOpened: false });
 
-  onClickOpen = () => this.setState({ isOpened: true })
+  onClickOpen = () => this.setState({ isOpened: true });
 
   render() {
     const { isOpened } = this.state;
@@ -46,23 +46,23 @@ class WithOnBlurComponent extends PureComponent {
 WithOnBlurComponent.propTypes = {
   setBlurListener: PropTypes.func.isRequired,
   unsetBlurListener: PropTypes.func.isRequired,
-  isOnce: PropTypes.bool
+  isOnce: PropTypes.bool,
 };
 
 WithOnBlurComponent.defaultProps = {
   setBlurListener: () => null,
   unsetBlurListener: () => null,
-  isOnce: false
+  isOnce: undefined,
 };
 
 const WithAutoOnBlurComponent = withOnBlur({ autoUnset: true })(WithOnBlurComponent);
-const WithoutEventsOnBlurComponent = withOnBlur({ 
-  listenClick: false, 
-  listenTab: false, 
-  listenEsc: true 
+const WithoutEventsOnBlurComponent = withOnBlur({
+  listenClick: false,
+  listenTab: false,
+  listenEsc: true
 })(WithOnBlurComponent);
 
-export default withOnBlur()(WithOnBlurComponent);
+export default withOnBlur({ debug: false })(WithOnBlurComponent);
 
 export {
   WithAutoOnBlurComponent,

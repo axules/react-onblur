@@ -12,8 +12,6 @@ class TestComponent extends PureComponent {
   }
 
   render() {
-    
-
     return (
       <div>
         <div>Example component</div>
@@ -34,7 +32,7 @@ TestComponent.propTypes = {
 };
 
 TestComponent.defaultProps = {
-  isOnce: false,
+  isOnce: undefined,
   isAuto: false,
   isEmpty: false
 };
